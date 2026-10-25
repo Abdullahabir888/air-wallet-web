@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install
+        run: |
+          npm ci
+          npm ci --prefix functions
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests (core, validation, app, functions)
+        run: npm test
+
+      - name: Firestore rules tests (emulator)
+        run: npx -y firebase-tools@15 emulators:exec --project demo-air-wallet --only firestore "npm run test:rules --prefix functions"
+
+      - name: Build functions bundle
+        run: npm run functions:build
+
+      - name: Build web
+        run: npm run export:web -w @air-wallet/app
+
+  deploy-backend:
+    if: github.ref == 'refs/heads/main' && vars.DEPLOY_BACKEND == 'true'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci && npm ci --prefix functions
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SA }}
+      - run: npx -y firebase-tools@15 deploy --only firestore,storage,functions --project ${{ vars.FIREBASE_PROJECT_ID }} --non-interactive

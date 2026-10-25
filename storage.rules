@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Profile photos: owner writes, signed-in users read. PNG/JPEG/WebP only, max 2 MB.
+    match /avatars/{uid}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size <= 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/(png|jpeg|webp)')
+        && fileName.matches('^[A-Za-z0-9_-]{8,64}\\.(png|jpg|jpeg|webp)$');
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

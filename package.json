@@ -1,0 +1,26 @@
+{
+  "name": "air-wallet",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Air Wallet \u2014 cross-platform digital wallet (web, Android, iOS) on Expo + Firebase",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run start -w @air-wallet/app",
+    "web": "npm run web -w @air-wallet/app",
+    "typecheck": "npm run typecheck --workspaces --if-present && npm run typecheck --prefix functions",
+    "test": "npm test --workspaces --if-present && npm test --prefix functions",
+    "functions:install": "npm install --prefix functions",
+    "functions:build": "npm run build --prefix functions",
+    "emulators": "npm run functions:build && firebase emulators:start --project demo-air-wallet --import=.emulator-data --export-on-exit",
+    "test:rules": "firebase emulators:exec --project demo-air-wallet --only firestore \"npm run test:rules --prefix functions\"",
+    "seed": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 node functions/scripts/seed.mjs",
+    "deploy:backend": "firebase deploy --only firestore,storage,functions",
+    "deploy:web": "npm run export:web -w @air-wallet/app"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

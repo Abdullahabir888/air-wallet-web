@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "air-wallet-dev",
+    "dev": "air-wallet-dev",
+    "prod": "air-wallet-prod"
+  }
+}

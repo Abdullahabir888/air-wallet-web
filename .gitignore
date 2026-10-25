@@ -1,0 +1,25 @@
+node_modules/
+.expo/
+dist/
+web-build/
+# Cloud Functions build output only. Don't widen to lib/: that would also hide apps/wallet/src/lib.
+/functions/lib/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.emulator-data/
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+google-services.json
+GoogleService-Info.plist
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.DS_Store
+.vercel

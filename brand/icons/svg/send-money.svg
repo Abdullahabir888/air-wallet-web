@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48"><defs><linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7CB8FF"/><stop offset=".55" stop-color="#2F7BF5"/><stop offset="1" stop-color="#1747C9"/></linearGradient><linearGradient id="gBlueDeep" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B82F6"/><stop offset="1" stop-color="#1E3FAE"/></linearGradient><linearGradient id="gBlueLite" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#BFDBFE"/><stop offset="1" stop-color="#60A5FA"/></linearGradient><linearGradient id="gShine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+ <path d="M8 34l6-3M6 40l7-3.5" stroke="url(#gBlueLite)" stroke-width="3.2" stroke-linecap="round" opacity=".7"/>
+ <path d="M42 6 9 21.5c-1.3.6-1.2 2.5.2 2.9l11 3.2 3.2 11c.4 1.4 2.3 1.5 2.9.2z" fill="url(#gBlue)"/>
+ <path d="M42 6 20.2 27.6l3.2 11c.4 1.4 2.3 1.5 2.9.2z" fill="url(#gBlueDeep)"/>
+ <path d="M42 6 9 21.5c-1.3.6-1.2 2.5.2 2.9l11 3.2z" fill="url(#gShine)" opacity=".6"/>
+</svg>

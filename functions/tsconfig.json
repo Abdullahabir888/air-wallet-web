@@ -1,0 +1,25 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": [
+      "node",
+      "jest"
+    ],
+    "paths": {
+      "@air-wallet/core": [
+        "../packages/core/src/index.ts"
+      ],
+      "@air-wallet/validation": [
+        "../packages/validation/src/index.ts"
+      ],
+      "zod": [
+        "./node_modules/zod"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "test"
+  ]
+}

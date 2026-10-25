@@ -1,0 +1,69 @@
+rules_version = '2';
+
+// Default deny. Clients READ their own data; every money write goes through Cloud Functions (Admin SDK).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.admin == true; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+
+    match /users/{uid} {
+      allow read: if isMe(uid) || isAdmin();
+      // Owner may change only these fields; phone/email/status are server-managed.
+      allow update: if isMe(uid)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['displayName', 'photoPath', 'theme', 'defaultCurrency', 'updatedAt'])
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() >= 2
+        && request.resource.data.displayName.size() <= 60
+        && request.resource.data.theme in ['system', 'light', 'dark']
+        && request.resource.data.defaultCurrency in ['BDT', 'USD', 'GBP', 'EUR'];
+      allow create, delete: if false;
+    }
+
+    match /wallets/{walletId} {
+      allow read: if (signedIn() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+      allow write: if false;
+    }
+
+    match /transactions/{txId} {
+      allow read: if (signedIn() && request.auth.uid in resource.data.participants) || isAdmin();
+      allow write: if false;
+    }
+
+    match /ledgerEntries/{id} {
+      allow read: if (signedIn() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+      allow write: if false;
+    }
+
+    match /moneyRequests/{id} {
+      allow read: if (signedIn() && request.auth.uid in resource.data.participants) || isAdmin();
+      allow write: if false;
+    }
+
+    match /atmCodes/{id} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /cards/{uid} {
+      allow read: if isMe(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    // Full card number + CVV: never readable by clients (revealCard Function only).
+    match /cardSecrets/{uid} { allow read, write: if false; }
+
+    match /exchangeQuotes/{id} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /fxRates/{base}  { allow read: if signedIn(); allow write: if false; }
+    match /billers/{id}    { allow read: if signedIn(); allow write: if false; }
+    match /auditLog/{id}   { allow read: if isAdmin();  allow write: if false; }
+
+    // agents, phoneIndex, idempotency, rateLimits, system data: server only
+    match /{document=**} { allow read, write: if false; }
+  }
+}
